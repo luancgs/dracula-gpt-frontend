@@ -1,3 +1,4 @@
+import 'package:dracula_gpt/src/interface/widgets/message_input.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -10,11 +11,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _counter = 0;
+  var message = 'Nenhum texto';
 
-  void _incrementCounter() {
+  updateText(String text) {
     setState(() {
-      _counter++;
+      message = text;
     });
   }
 
@@ -29,20 +30,13 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+            MessageInput(
+              key: const ValueKey('message_input'),
+              updateText: updateText,
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+            Text(message)
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }
