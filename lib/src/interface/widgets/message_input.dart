@@ -1,8 +1,11 @@
 import 'dart:convert';
 
 import 'package:dracula_gpt/src/models/gpt_response.dart';
+import 'package:dracula_gpt/src/services/message.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+
+var messageService = MessageService();
 
 class MessageInput extends StatefulWidget {
   final Function(String) updateText;
@@ -22,12 +25,20 @@ class _MessageInputState extends State<MessageInput> {
   }
 
   void callApi() async {
+    var userMessage = textController.text;
     final response = await http.post(Uri.parse('http://localhost:3000/query'),
-        headers: {'Content-Type': 'text/plain'}, body: textController.text);
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'prompt': userMessage,
+          'context': await messageService.getMessages()
+        }));
 
     if (response.statusCode == 200) {
-      widget
-          .updateText(GptResponse.fromJson(jsonDecode(response.body)).message);
+      var gptMessage = GptResponse.fromJson(jsonDecode(response.body)).message;
+      widget.updateText(gptMessage);
+
+      await messageService.addMessage(userMessage, 'user');
+      await messageService.addMessage(gptMessage, 'assistant');
     } else {
       widget.updateText("Erro na requisição");
     }
