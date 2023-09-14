@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class Message {
   final String id;
   final String content;
@@ -27,5 +29,10 @@ class Message {
       'role': role,
       'timestamp': timestamp.toIso8601String(),
     };
+  }
+
+  @override
+  String toString() {
+    return jsonEncode(toJson());
   }
 }
